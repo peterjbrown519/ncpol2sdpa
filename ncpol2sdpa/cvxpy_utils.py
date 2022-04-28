@@ -21,7 +21,7 @@ def solve_with_cvxpy(sdp, solverparameters=None):
     problem = convert_to_cvxpy(sdp)
     if solverparameters is not None and 'solver' in solverparameters:
         solver = solverparameters.pop('solver')
-        v = problem.solve(solver=solver, verbose=(sdp.verbose > 0))
+        v = problem.solve(solver=solver, verbose=(sdp.verbose > 0), **solverparameters)
     else:
         v = problem.solve(verbose=(sdp.verbose > 0))
     if v is None:
