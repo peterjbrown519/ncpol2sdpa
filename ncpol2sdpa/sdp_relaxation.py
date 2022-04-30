@@ -139,6 +139,8 @@ class SdpRelaxation(Relaxation):
     :type normalized: bool.
     :param parallel: Optional parameter for allowing parallel computations.
     :type parallel: bool.
+    :param number_of_threads: set the number of threads if parallel is True. If None, use cpu_count() of multiprocess.
+    :type number_of_threads: int.
 
     Attributes:
       - `monomial_sets`: The monomial sets that generate the moment matrix blocks.
@@ -161,7 +163,7 @@ class SdpRelaxation(Relaxation):
 
     """
     def __init__(self, variables, parameters=None, verbose=0, normalized=True,
-                 parallel=False):
+                 parallel=False, number_of_threads=None):
         """Constructor for the class.
         """
         super(SdpRelaxation, self).__init__()
@@ -254,10 +256,13 @@ class SdpRelaxation(Relaxation):
         self._parallel = False
         if parallel:
             try:
-                n_cpu = cpu_count()
+                if number_of_threads is None:
+                    self.number_of_threads = cpu_count()
+                else:
+                    self.number_of_threads = number_of_threads
                 self._parallel = parallel
                 if self.verbose > 0:
-                    print("Parallel processing on %d cores" % n_cpu)
+                    print("Parallel processing on %d cores" % self.number_of_threads)
             except:
                 print("Warning: multiprocessing cannot be imported!",
                       file=sys.stderr)
@@ -378,7 +383,7 @@ class SdpRelaxation(Relaxation):
             pool = Pool()
             # This is just a guess and can be optimized
             chunksize = int(max(int(np.sqrt(len(monomialsA) * len(monomialsB) *
-                                        len(monomialsA) / 2) / cpu_count()),
+                                        len(monomialsA) / 2) / self.number_of_threads),
                                 1))
         for rowA in range(len(monomialsA)):
             if self._parallel:
@@ -416,7 +421,7 @@ class SdpRelaxation(Relaxation):
                     msg = ""
                     if self.verbose > 1 and self._parallel:
                         msg = ", working on block {:0} with {:0} processes with a chunksize of {:0d}"\
-                              .format(block_index, cpu_count(),
+                              .format(block_index, self.number_of_threads,
                                       chunksize)
                     msg = "{:0} (done: {:.2%}, ETA {:02d}:{:02d}:{:03.1f}"\
                           .format(n_vars, percentage, hours, minutes, seconds) + \
@@ -585,7 +590,7 @@ class SdpRelaxation(Relaxation):
                            substitutions=self.substitutions)
             if self._parallel and lm > 1:
                 chunksize = max(int(np.sqrt(lm*lm/2) /
-                                    cpu_count()), 1)
+                                    self.number_of_threads), 1)
                 iter_ = pool.map(func, ([row, column] for row in range(lm)
                                         for column in range(row, lm)),
                                  chunksize)
@@ -666,7 +671,7 @@ class SdpRelaxation(Relaxation):
             lm = len(monomial_sets[i])
             if self._parallel and lm > 1:
                 chunksize = max(int(np.sqrt(lm*lm/2) /
-                                    cpu_count()), 1)
+                                    self.number_of_threads), 1)
                 iter_ = pool.map(func, ([row, column] for row in range(lm)
                                         for column in range(row, lm)),
                                  chunksize)
