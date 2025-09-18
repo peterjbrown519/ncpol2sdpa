@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: ncpol2sdpa
+Version: 1.14.0
+Summary: Solve global polynomial optimization problems of either commutative variables or noncommutative operators through a semidefinite programming (SDP) relaxation
+Home-page: https://github.com/peterjbrown519/ncpol2sdpa
+Author: Peter Wittek
+Author-email: peterjbrown519@users.noreply.github.com
+License: LICENSE
+Keywords: optimization,semidefinite programming,polynomial optimization problem,noncommuting variable,SDP,quantum
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: sympy>=1.0
+Requires-Dist: scipy
+Requires-Dist: cvxopt
+Dynamic: license-file
